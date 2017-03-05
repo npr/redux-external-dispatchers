@@ -1,0 +1,8 @@
+// @flow
+import type { Dispatch, StoreEnhancer } from 'redux';
+
+declare type ExternalDispatcherAPI<A> = { dispatch: Dispatch<A> };
+
+declare type ExternalDispatcher<A> = (api: ExternalDispatcherAPI<A>) => void;
+
+declare export function applyExternalDispatchers<S, A>(...dispatchers: Array<ExternalDispatcher<A>>): StoreEnhancer<S, A>;

@@ -1,0 +1,89 @@
+{
+  "name": "redux-external-dispatchers",
+  "version": "1.0.0",
+  "description": "Redux library for dispatching actions from outside of your Redux app",
+  "license": "MIT",
+  "browser": "dist/redux-external-dispatchers.js",
+  "main": "lib/index.js",
+  "module": "",
+  "jsnext:main": "",
+  "typings": "./index.d.ts",
+  "files": [
+    "dist",
+    "lib",
+    "es",
+    "src",
+    "index.d.ts"
+  ],
+  "peerDependencies": {
+    "redux": ">=3.1.0"
+  },
+  "devDependencies": {
+    "babel-cli": "6.23.0",
+    "babel-loader": "^6.2.0",
+    "babel-plugin-check-es2015-constants": "^6.3.13",
+    "babel-plugin-transform-es2015-arrow-functions": "^6.3.13",
+    "babel-plugin-transform-es2015-block-scoped-functions": "^6.3.13",
+    "babel-plugin-transform-es2015-block-scoping": "^6.3.13",
+    "babel-plugin-transform-es2015-classes": "^6.3.13",
+    "babel-plugin-transform-es2015-computed-properties": "^6.3.13",
+    "babel-plugin-transform-es2015-destructuring": "^6.3.13",
+    "babel-plugin-transform-es2015-for-of": "^6.3.13",
+    "babel-plugin-transform-es2015-function-name": "^6.3.13",
+    "babel-plugin-transform-es2015-literals": "^6.3.13",
+    "babel-plugin-transform-es2015-modules-commonjs": "^6.3.13",
+    "babel-plugin-transform-es2015-object-super": "^6.3.13",
+    "babel-plugin-transform-es2015-parameters": "^6.3.13",
+    "babel-plugin-transform-es2015-shorthand-properties": "^6.3.13",
+    "babel-plugin-transform-es2015-spread": "^6.3.13",
+    "babel-plugin-transform-es2015-sticky-regex": "^6.3.13",
+    "babel-plugin-transform-es2015-template-literals": "^6.3.13",
+    "babel-plugin-transform-es2015-unicode-regex": "^6.3.13",
+    "babel-plugin-transform-es3-member-expression-literals": "^6.5.0",
+    "babel-plugin-transform-es3-property-literals": "^6.5.0",
+    "babel-plugin-transform-object-rest-spread": "^6.3.13",
+    "babel-register": "^6.6.0",
+    "cross-env": "^1.0.7",
+    "expect": "^1.14.0",
+    "flow-bin": "^0.37.0",
+    "mocha": "^2.4.5",
+    "rimraf": "2.6.1",
+    "webpack": "^1.9.6"
+  },
+  "scripts": {
+    "clean": "rimraf lib dist es",
+    "test": "cross-env BABEL_ENV=commonjs mocha --compilers js:babel-register --recursive",
+    "build:commonjs": "cross-env BABEL_ENV=commonjs babel src --out-dir lib",
+    "build:es": "cross-env BABEL_ENV=es babel src --out-dir es",
+    "build:umd": "cross-env BABEL_ENV=commonjs NODE_ENV=development webpack src/index.js dist/redux-external-dispatchers.js",
+    "build:umd:min": "cross-env BABEL_ENV=commonjs NODE_ENV=production webpack src/index.js dist/redux-external-dispatchers.min.js",
+    "build": "npm run build:commonjs && npm run build:es && npm run build:umd && npm run build:umd:min",
+    "prepublish": "npm run clean && npm run test && npm run build",
+    "flow": "flow; test $? -eq 0 -o $? -eq 2"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/npr/redux-external-dispatchers"
+  },
+  "keywords": [
+    "redux",
+    "dispatch",
+    "dispatcher",
+    "dispatchers"
+  ],
+  "authors": [
+    "Stephen Choma Thompson <apostrophest@gmail.com> (https://github.com/apostrophest)"
+  ],
+  "bugs": {
+    "url": "https://github.com/npr/redux-external-dispatchers/issues"
+  },
+  "npmName": "redux-external-dispatchers",
+  "npmFileMap": [
+    {
+      "basePath": "/dist/",
+      "files": [
+        "*.js"
+      ]
+    }
+  ]
+}
