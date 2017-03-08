@@ -17,6 +17,7 @@ This can also help you keep a bright line between effectful code and pure code.
 ##### Browser document visibility
 Bind a handler to the document's visibilitychange event that tells your Redux app whether it is visible to the user.
 
+###### Explicit external dispatcher
 ```javascript
 import BrowserActions from '../lib/Browser/actions';
 
@@ -33,9 +34,23 @@ export default function visibilityDispatcher({ dispatch }) {
 };
 ```
 
+###### Using external dispatcher creator
+```javascript
+import { onChange } from 'redux-external-dispatchers';
+
+import BrowserActions from '../lib/Browser/actions';
+
+export default const visibilityDispatcher = onChange({
+  get: () => document.visibilityState,
+  register: callback => document.addEventListener('visibilitychange', callback),
+  actionCreator: BrowserActions.onVisiblityChanged
+});
+```
+
 ##### Browser viewport breakpoint
 Bind a handler to the window resize event that tells your Redux app what the current breakpoint is (mobile, tablet, desktop, etc.).
 
+###### Explicit external dispatcher
 ```javascript
 import BrowserActions from '../lib/Browser/actions';
 import Breakpoints from '../lib/constants/Breakpoints';
@@ -63,11 +78,37 @@ export default function viewportDispatcher({ dispatch }) {
 };
 ```
 
+###### Using external dispatcher creator
+```javascript
+import { onChange } from 'redux-external-dispatchers';
+
+import BrowserActions from '../lib/Browser/actions';
+import Breakpoints from '../lib/constants/Breakpoints';
+
+function getBreakpointFromWidth(width) {
+  if (width < 768) {
+    return Breakpoints.SMALL;
+  } else if (width < 1024) {
+    return Breakpoints.MEDIUM;
+  } else {
+    return Breakpoints.LARGE;
+  }
+}
+
+export default const viewportDispatcher = onChange({
+  get: () => getBreakpointFromWidth(window.innerWidth),
+  register: callback => window.addEventListener('onresize', callback),
+  actionCreator: BrowserActions.onBreakpointChanged
+});
+```
+
 ##### Content environment
 Since we embedded a Redux app into an existing web site, we already had a tested non-Redux system for page navigation. To tell our app whether we were on a news page, music page, etc., we bound a handler to our page navigation event and dispatched an action notifying Redux about the content environment.
 
+###### Explicit external dispatcher
 ```javascript
 import $ from 'jquery';
+
 import NavigationActions from '../lib/Navigation/actions';
 
 export default function contentEnvDispatcher({ dispatch }) {
@@ -78,9 +119,24 @@ export default function contentEnvDispatcher({ dispatch }) {
 };
 ```
 
+###### Using external dispatcher creator
+```javascript
+import $ from 'jquery';
+import { every } from 'redux-external-dispatchers';
+
+import NavigationActions from '../lib/Navigation/actions';
+
+export default const contentEnvDispatcher = every({
+  get: () => $('section.main-section').attr('id'),
+  register: callback => window.addEventListener('hashchange', callback),
+  actionCreator: NavigationActions.onContentEnvironmentChanged
+});
+```
+
 ##### Advertising integration
 If you control the markup for advertising, you can bind an event handler to interactions on a non-Redux advertisement and notify the Redux app about them. This was one of the ways we supported playing sponsored content in our audio player app on the web site.
 
+###### Explicit external dispatcher
 ```javascript
 import AudioActions from '../lib/Audio/actions';
 
@@ -95,6 +151,28 @@ export default function adAudioDispatcher({ dispatch }) {
     }
   });
 };
+```
+
+###### Using external dispatcher creator
+```javascript
+import { every } from 'redux-external-dispatchers';
+
+import AudioActions from '../lib/Audio/actions';
+
+export default const adAudioDispatcher = every({
+  get: () => {
+    const adIframe = document.querySelector('#ad iframe');
+    if (adIframe && adIframe.contentDocument) {
+      const audioElement = adIframe.contentDocument.querySelector('[data-ad-audio]');
+      if (audioElement && audioElement.getAttribute('data-ad-audio')) {
+        return audioElement.getAttribute('data-ad-audio');
+      } 
+    }
+    return undefined;
+  },
+  register: callback => document.addEventListener('app:ads:loaded', callback),
+  actionCreator: AudioActions.play
+});
 ```
 
 ### Wiring to your Redux store

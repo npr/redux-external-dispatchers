@@ -7,7 +7,7 @@ const onChangeStartingWith = ({ get, register, actionCreator }) => startValue =>
     let cachedValue = startValue;
     register(() => {
         const newValue = get();
-        if (newValue !== cachedValue) {
+        if (typeof newValue !== 'undefined' && newValue !== cachedValue) {
             dispatch(actionCreator(newValue));
             cachedValue = newValue;
         }

@@ -9,13 +9,13 @@ export type ExternalDispatcher<S> = (api: ExternalDispatcherAPI<S>) => void;
 export type ExternalDispatcherCallback = () => void;
 
 export interface ExternalDispatcherCreator<V> {
-  get: () => V,
+  get: () => V | undefined,
   register: (callback: ExternalDispatcherCallback) => void,
   actionCreator: (value: V) => Action
 }
 
 export interface ObservableDispatcherCreator<V, E> {
-  next: (value: V) => void,
+  next: (value?: V) => void,
   error?: (errorValue: E) => void,
   complete?: () => void
 }

@@ -69,4 +69,17 @@ describe('creators/every', () => {
     expect(dispatch.calls.length).toEqual(1, 'dispatch should only be called once on register callback');
     expect(dispatch.calls[0].arguments[0]).toEqual({ type: 'TEST_ACTION', payload: 'test string' }, 'dispatch should be called with the result of the action creator');
   });
+
+  it('does not dispatch if get returns undefined', () => {
+    const get = () => undefined;
+    const register = (callback) => callback();
+    const actionCreator = expect.createSpy();
+    const dispatch = expect.createSpy();
+    
+    const externalDispatcher = every({ get, register, actionCreator });
+    const appliedExternalDispatcher = externalDispatcher({ dispatch });
+
+    expect(dispatch).toNotHaveBeenCalled('dispatch should not be called for undefined values');
+    expect(actionCreator).toNotHaveBeenCalled('not strictly necessary, but action creator should probably not be called');
+  });
 });
