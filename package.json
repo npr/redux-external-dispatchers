@@ -1,6 +1,6 @@
 {
   "name": "redux-external-dispatchers",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Redux library for dispatching actions from outside of your Redux app",
   "license": "MIT",
   "browser": "dist/redux-external-dispatchers.js",
