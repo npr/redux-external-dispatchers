@@ -19,17 +19,13 @@
 export default function applyExternalDispatchers(...dispatchers) {
   return (createStore) => (reducer, initialState, enhancer) => {
     var store = createStore(reducer, initialState, enhancer);
-    var dispatch = store.dispatch;
 
     var externalDispatcherApi = {
-      dispatch: (action) => dispatch(action)
+      dispatch: (action) => store.dispatch(action)
     };
 
     dispatchers.map(dispatcher => dispatcher(externalDispatcherApi));
 
-    return {
-      ...store,
-      dispatch
-    }
+    return store;
   };
 }
