@@ -118,6 +118,11 @@ export default function configureStore(initialState) {
 
 If you are already using one store enhancer, you will need to use Redux's `compose` to compose all of your store enhancers together.
 
+**Note:** The order of applying store enhancers matters a lot!
+
+##### Simple instructions
+Make sure that your `applyExternalDispatchers` call is the first argument to `compose`.
+
 ```javascript
 import { createStore, applyMiddleware, compose } from 'redux';
 import { applyExternalDispatchers } from 'redux-external-dispatchers';
@@ -132,12 +137,28 @@ export default function configureStore(initialState) {
     rootReducer,
     initialState,
     compose(
-      applyMiddleware(thunk, createLogger()),
-      applyExternalDispatchers(timer, message)
+      applyExternalDispatchers(timer, message),
+      applyMiddleware(thunk, createLogger())
     )
   );
 };
 ```
+
+##### Advanced instructions
+The Redux store enhancer API requires that each store enhancer return a patched version of the store. The last argument of `compose` will modify the original Redux store. The second to last argument will patch the modified store, and so on.
+
+One of the important consequences of this is that any Redux store API functions (`dispatch`, `getState`, `subscribe`, and `replaceReducer`) used within any given store enhancer will only have the features of previously applied store enhancers.
+
+You most likely want your external dispatchers to have access to all of the enhancements provided by all of your other store enhancers.
+
+Take the example of `applyMiddleware` in the code above. It will receive the original Redux `dispatch` and return a store whose dispatched actions will run through each middleware. As a result, `applyExternalDispatchers` will receive a `dispatch` function that passes through middlewares. Since `applyExternalDispatchers` injects the version of `dispatch` it receives during store creation, actions dispatched from external dispatchers will run through all middlewares.
+
+Consider what would happen if we reversed the order of the `compose` arguments. `applyExternalDispatchers` would receive the original Redux `dispatch` and return a store with an unmodified `dispatch`. `applyMiddleware` would receive the unmodified dispatch and return a store whose `dispatch` function runs through all middlewares. The external dispatchers will only have a handle on the unmodified Redux `dispatch`.
+
+###### Store enhancer resources
+- https://github.com/reactjs/redux/blob/master/docs/Glossary.md#store-enhancer
+- https://github.com/reactjs/redux/blob/master/docs/api/applyMiddleware.md#tips
+- https://github.com/gaearon/redux-devtools/blob/master/docs/Walkthrough.md#use-devtoolsinstrument-store-enhancer
 
 ### Dependencies
 There is only a peer dependency on Redux 3.1.0 or later. Redux 3.1.0 introduced a nicer store enhancer API that made this project easier to integrate into existing Redux apps.
