@@ -23,7 +23,7 @@ import BrowserActions from '../lib/Browser/actions';
 let visibility = document.visibilityState;
 
 export default function visibilityDispatcher({ dispatch }) {
-  document.addEventListener('visibilitychange', function onResize() {
+  document.addEventListener('visibilitychange', function onVisibilityChange() {
     const currentVisibility = document.visibilityState;
     if (currentVisibility !== visibility) {
       dispatch(BrowserActions.onVisibilityChanged(currentVisibility));
